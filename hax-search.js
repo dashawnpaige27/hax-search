@@ -52,7 +52,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
           display: block;
           font-family: Arial, sans-serif;
           padding: 16px;
-          background-color: white; /* Set overall background to white */
+          background-color: white;
         }
 
         .input-container {
@@ -68,7 +68,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         .input-container span {
           padding: 0 10px;
           font-weight: bold;
-          color: black; /* Set label text color to black */
+          color: black;
         }
 
         input {
@@ -76,13 +76,13 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
           padding: 8px;
           border: 1px solid #ccc;
           border-radius: 4px;
-          color: black; /* Set input text color to black */
+          color: black;
         }
 
         button {
           padding: 8px 16px;
           background-color: #0078d4;
-          color: #fff; /* Keep button text white */
+          color: #fff;
           border: none;
           border-radius: 4px;
           cursor: pointer;
@@ -91,7 +91,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         .site-overview {
           display: flex;
           align-items: center;
-          border: 1px solid #000; /* Set overview border to black */
+          border: 1px solid #000;
           border-radius: 4px;
           padding: 16px;
           margin-bottom: 20px;
@@ -109,7 +109,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         .site-info {
           text-align: center;
           flex: 1;
-          color: black; /* Set site info text color to black */
+          color: black;
         }
 
         .site-info div {
@@ -123,30 +123,30 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         }
 
         .card {
-          border: 1px solid #000; /* Set card border to black */
+          border: 1px solid #000;
           border-radius: 4px;
           padding: 16px;
           width: calc(25% - 16px);
           box-sizing: border-box;
           cursor: pointer;
-          background-color: white; /* Set card background to white */
+          background-color: white;
           transition: background-color 0.2s ease;
-          text-align: center; /* Center text in the card */
+          text-align: center;
         }
 
         .card:hover {
-          background-color: #f0f0f0; /* Slightly darker on hover */
+          background-color: #f0f0f0;
         }
 
         .card img {
-          max-width: 100%; /* Ensure the image fits within the card */
-          height: auto; /* Maintain aspect ratio */
-          margin: 0 auto; /* Center the image */
-          display: block; /* Ensure the image is treated as a block element */
+          max-width: 100%;
+          height: auto;
+          margin: 0 auto;
+          display: block;
         }
 
         .card-content {
-          color: black; /* Set card content text color to black */
+          color: black;
         }
 
         .card-content h3 {
@@ -154,21 +154,21 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         }
 
         .info-points {
-          list-style-type: none; /* Remove default bullets */
-          padding-left: 0; /* Remove padding */
-          margin: 10px 0; /* Add margin above and below */
+          list-style-type: none;
+          padding-left: 0;
+          margin: 10px 0;
         }
 
         .info-points li {
-          position: relative; /* Allow positioning for pseudo-element */
-          padding-left: 20px; /* Space for dash */
+          position: relative;
+          padding-left: 20px;
         }
 
         .info-points li::before {
-          content: "—"; /* Dash point */
-          position: absolute; /* Positioning relative to the list item */
-          left: 0; /* Align to the left */
-          color: black; /* Dash color */
+          content: "—";
+          position: absolute;
+          left: 0;
+          color: black;
         }
 
         .link-buttons {
@@ -180,7 +180,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         .link-button {
           padding: 6px 10px;
           background-color: #0078d4;
-          color: #fff; /* Keep link button text white */
+          color: #fff;
           border: none;
           border-radius: 4px;
           text-decoration: none;
