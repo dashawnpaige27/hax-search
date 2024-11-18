@@ -1,336 +1,217 @@
 import { LitElement, html, css } from "lit";
-import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
-import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
+import "./hax-item.js";
 
-export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
+export class HaxSearch extends LitElement {
   static get tag() {
     return "hax-search";
   }
 
-  constructor() {
-    super();
-    this.siteUrl = "";
-    this.siteData = null;
-    this.results = [];
-    this.loading = false;
-    this.error = "";
-    this.t = {
-      analyze: "Analyze",
-      enterUrl: "Enter HAX site URL",
-      name: "Name",
-      description: "Description",
-      theme: "Theme",
-      created: "Created",
-      lastUpdated: "Last updated",
-      openContent: "Open Content",
-      openSource: "Open Source",
-    };
-    this.registerLocalization({
-      context: this,
-      localesPath:
-        new URL("./locales/hax-search.ar.json", import.meta.url).href + "/../",
-      locales: ["ar", "es", "hi", "zh"],
-    });
-  }
-
   static get properties() {
     return {
-      ...super.properties,
-      siteUrl: { type: String },
-      siteData: { type: Object },
-      results: { type: Array },
-      loading: { type: Boolean },
-      error: { type: String },
+      items: { type: Array },
+      siteName: { type: String },
+      siteDescription: { type: String },
+      siteLogo: { type: String },
+      theme: { type: String },
+      created: { type: String },
+      lastUpdated: { type: String },
+      domain: { type: String },
+      hexcode: { type: String },
     };
+  }
+
+  constructor() {
+    super();
+    this.items = [];
+    this.siteName = "";
+    this.siteDescription = "";
+    this.siteLogo = "";
+    this.theme = "";
+    this.created = "";
+    this.lastUpdated = "";
+    this.domain = "https://haxtheweb.org";
+    this.hexcode = "";
   }
 
   static get styles() {
-    return [
-      super.styles,
-      css`
-        :host {
-          display: block;
-          font-family: Arial, sans-serif;
-          padding: 16px;
-          background-color: white;
-        }
+    return css`
+      .input-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e51111f3;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px;
+      }
 
-        .input-container {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 20px;
-          padding: 10px;
-          background-color: rgba(0, 0, 0, 0.05);
-          border-radius: 8px;
-        }
+      .input-container input {
+        padding: 10px;
+        font-size: 16px;
+        width: 60%;
+        margin-right: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
 
-        .input-container span {
-          padding: 0 10px;
-          font-weight: bold;
-          color: black;
-        }
+      .input-container button {
+        padding: 10px 20px;
+        background-color: #0c99d5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
 
-        input {
-          flex: 1;
-          padding: 8px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          color: black;
-        }
+      .input-container button:hover {
+        background-color: #0aea24;
+      }
 
-        button {
-          padding: 8px 16px;
-          background-color: #0078d4;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
+      .metadata-box {
+        text-align: center;
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease-in;
+        background: linear-gradient(135deg, #28b08a, #0c99d5);
+        color: white;
+      }
 
-        .site-overview {
-          display: flex;
-          align-items: center;
-          border: 1px solid #000;
-          border-radius: 4px;
-          padding: 16px;
-          margin-bottom: 20px;
-          background-color: rgba(0, 0, 0, 0.05);
-        }
+      .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        justify-content: center;
+      }
 
-        .site-overview img {
-          width: 80px;
-          height: 80px;
-          object-fit: cover;
-          margin-right: 16px;
-          border-radius: 4px;
-        }
+      hax-item {
+        flex: 1 1 calc(25% - 16px);
+        min-width: 200px;
+        max-width: 300px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: white;
+      }
 
-        .site-info {
-          text-align: center;
-          flex: 1;
-          color: black;
-        }
+      hax-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
 
-        .site-info div {
-          margin: 4px 0;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
         }
+        to {
+          opacity: 1;
+        }
+      }
 
-        .results-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
+      .metadata-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
 
-        .card {
-          border: 1px solid #000;
-          border-radius: 4px;
-          padding: 16px;
-          width: calc(25% - 16px);
-          box-sizing: border-box;
-          cursor: pointer;
-          background-color: white;
-          transition: background-color 0.2s ease;
-          text-align: center;
-        }
+      .metadata-box img {
+        max-width: 50%;
+        height: auto;
+        margin-bottom: 10px;
+      }
+    `;
+  }
 
-        .card:hover {
-          background-color: #f0f0f0;
-        }
+  handleAnalyze() {
+    const input = this.shadowRoot.querySelector("#url-input").value;
+    this.url = input.endsWith("site.json") ? input : `${input}/site.json`;
+    this.url = this.url.startsWith("https://")
+      ? this.url
+      : `https://${this.url}`;
 
-        .card img {
-          max-width: 100%;
-          height: auto;
-          margin: 0 auto;
-          display: block;
-        }
+    console.log("Constructed URL:", this.url);
 
-        .card-content {
-          color: black;
+    fetch(this.url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (this.validateData(data)) {
+          this.processData(data);
+        } else {
+          console.error("Invalid data format.");
         }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }
 
-        .card-content h3 {
-          margin: 0 0 8px;
-        }
+  validateData(data) {
+    return data?.metadata && Array.isArray(data.items);
+  }
 
-        .info-points {
-          list-style-type: none;
-          padding-left: 0;
-          margin: 10px 0;
-        }
+  processData(data) {
+    this.siteName = data.metadata.site.name || "Unknown Site";
+    this.siteDescription = data.description || "No description available.";
+    this.siteLogo = `${this.domain}/${data.metadata.site.logo || ""}`;
+    this.theme = data.metadata.theme.name || "Unknown Theme";
+    this.created = data.metadata.site.created
+      ? new Date(data.metadata.site.created * 1000).toLocaleDateString()
+      : "N/A";
+    this.lastUpdated = data.metadata.site.updated
+      ? new Date(data.metadata.site.updated * 1000).toLocaleDateString()
+      : "N/A";
 
-        .info-points li {
-          position: relative;
-          padding-left: 20px;
-        }
-
-        .info-points li::before {
-          content: "—";
-          position: absolute;
-          left: 0;
-          color: black;
-        }
-
-        .link-buttons {
-          display: flex;
-          gap: 8px;
-          margin-top: 10px;
-        }
-
-        .link-button {
-          padding: 6px 10px;
-          background-color: #0078d4;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          text-decoration: none;
-          font-size: 14px;
-        }
-
-        .link-button:hover {
-          background-color: #005fa3;
-        }
-
-        @media (max-width: 768px) {
-          .card {
-            width: calc(50% - 16px);
-          }
-        }
-
-        @media (max-width: 480px) {
-          .card {
-            width: 100%;
-          }
-        }
-      `,
-    ];
+    this.items = data.items;
   }
 
   render() {
     return html`
-      <div class="wrapper">
-        <div class="input-container">
-          <span>HAX site</span>
+      <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin-right: 20px; font-size: 24px; font-weight: bold;">
+          HAX Site
+        </h1>
+        <div class="input-container" style="flex: 1;">
           <input
-            type="url"
-            placeholder="${this.t.enterUrl}"
-            .value="${this.siteUrl}"
-            @input="${this._updateUrl}"
+            type="text"
+            id="url-input"
+            placeholder="Enter site URL"
             required
           />
-          <button @click="${this._fetchData}" ?disabled="${!this.siteUrl}">
-            ${this.t.analyze}
-          </button>
-        </div>
-
-        ${this.siteData ? this._renderSiteOverview() : ""}
-        ${this.results.length > 0 ? this._renderResultsGrid() : ""}
-        ${this.error ? html`<div class="error">${this.error}</div>` : ""}
-      </div>
-    `;
-  }
-
-  _renderSiteOverview() {
-    return html`
-      <div class="site-overview">
-        <img
-          src="${this.siteData?.metadata?.logo || "/placeholder-image.jpg"}"
-          alt="Site Logo"
-        />
-        <div class="site-info">
-          <div><strong>${this.t.name}:</strong> ${this.siteData.title}</div>
-          <div>
-            <strong>${this.t.description}:</strong>
-            ${this.siteData.description}
-          </div>
-          <div>
-            <strong>${this.t.theme}:</strong> ${this.siteData.metadata?.theme}
-          </div>
-          <div>
-            <strong>${this.t.created}:</strong>
-            ${this.siteData.metadata?.created}
-          </div>
-          <div>
-            <strong>${this.t.lastUpdated}:</strong>
-            ${this.siteData.metadata?.updated}
-          </div>
+          <button @click="${this.handleAnalyze}">Analyze</button>
         </div>
       </div>
+      ${this.siteName
+        ? html`
+            <div class="metadata-box">
+              <h2>${this.siteName}</h2>
+              <p>${this.siteDescription}</p>
+              ${this.siteLogo
+                ? html`<img src="${this.siteLogo}" alt="Site Logo" />`
+                : ""}
+              <p>Theme: ${this.theme}</p>
+              <p>Created: ${this.created}</p>
+              <p>Last Updated: ${this.lastUpdated}</p>
+            </div>
+            <div class="cards-container">
+              ${this.items.map(
+                (item) => html`
+                  <hax-item
+                    title="${item.title}"
+                    image="${item.metadata.images[0]}"
+                    description="${item.description}"
+                    last_updated="${item.metadata?.updated || "N/A"}"
+                    open_component="${item.slug
+                      ? `https://haxtheweb.org/${item.slug}`
+                      : "#"}"
+                    open_source="${item.location
+                      ? `https://haxtheweb.org/${item.location}`
+                      : "#"}"
+                  ></hax-item>
+                `
+              )}
+            </div>
+          `
+        : ""}
     `;
-  }
-
-  _renderResultsGrid() {
-    return html`
-      <div class="results-grid">
-        ${this.results.map((item) => this._renderCard(item))}
-      </div>
-    `;
-  }
-
-  _renderCard(item) {
-    return html`
-      <div class="card" @click="${() => this._openCard(item)}">
-        <img
-          src="https://haxtheweb.org/${item.metadata?.image ||
-          "/placeholder.svg"}"
-          alt="${item.title}"
-        />
-        <div class="card-content">
-          <h3>${item.title}</h3>
-          <ul class="info-points">
-            <li>${this.t.lastUpdated}: ${item.metadata?.updated}</li>
-            <li>${item.description}</li>
-          </ul>
-          <div class="link-buttons">
-            <a
-              class="link-button"
-              href="https://haxtheweb.org/${item.slug}"
-              target="_blank"
-              >Open Content</a
-            >
-            <a
-              class="link-button"
-              href="https://haxtheweb.org/${item.location}"
-              target="_blank"
-              >Open Source</a
-            >
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  _updateUrl(event) {
-    this.siteUrl = event.target.value;
-  }
-
-  async _fetchData() {
-    this.error = "";
-    this.siteData = null;
-    this.results = [];
-    if (!this.siteUrl || !this.siteUrl.endsWith("site.json")) {
-      this.error = "Please enter a valid site.json URL.";
-      return;
-    }
-
-    try {
-      const response = await fetch(this.siteUrl);
-      if (!response.ok) throw new Error("Failed to fetch site data");
-      const data = await response.json();
-      if (!data || !data.items || !data.metadata) {
-        throw new Error("Invalid site.json schema");
-      }
-      this.siteData = data;
-      this.results = data.items || [];
-    } catch (error) {
-      this.error = error.message;
-      console.error("Error fetching site data:", error);
-    }
-  }
-
-  static get haxProperties() {
-    return new URL(`./lib/${this.tag}.haxProperties.json`, import.meta.url)
-      .href;
   }
 }
 
